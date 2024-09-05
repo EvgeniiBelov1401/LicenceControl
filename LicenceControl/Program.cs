@@ -35,7 +35,7 @@ namespace LicenceControl
             Console.WriteLine($"Организация: {licence.Name}\n" +
                 $"Логин: {licence.Login}\nПароль: {licence.Password}");
             licence.CheckLicence();
-            if (licence.Check)
+            if (licence.Check && licence.workTime)
             {
                 Console.WriteLine($"Подписка действительна..." +
                     $"\nДата начала подписки: {licence.StartDate.ToString("dd.MM.yyyy")}" +

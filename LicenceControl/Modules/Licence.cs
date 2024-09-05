@@ -18,6 +18,8 @@ namespace LicenceControl.Modules
         public DateTime CurrentDay { get; set; }
         public bool Check { get; set; }
 
+        public bool workTime = true;
+
 
         public Licence(string name, string login, string password, string startDate, string stopDate)
         {
@@ -31,35 +33,44 @@ namespace LicenceControl.Modules
 
         public void CheckLicence()
         {
-            try
+            if (workTime)
             {
-                if (DateTime.Now >= this.StopDate || this.CurrentDay >= this.StopDate)
+                try
                 {
-                    this.Check = false;
-                    this.CurrentDay = DateTime.Now;
-                    throw new EndLicenceException();
+                    // Здесь должна быть проверка на логин пароль и т.п.!!!
+                    if (DateTime.Now >= this.StopDate || this.CurrentDay >= this.StopDate)
+                    {
+                        this.Check = false;
+                        this.CurrentDay = DateTime.Now;
+                        throw new EndLicenceException();
+                        // Здесь должна быть заблокирована кнопка печати!!!
+                    }
+                    else if (DateTime.Now < this.CurrentDay)
+                    {
+                        this.Check = false;
+                        throw new NonCurrentDateException();
+                        // Здесь должна быть заблокирована кнопка печати!!!
+                    }
+                    else
+                    {
+                        this.Check = true;
+                        this.CurrentDay = DateTime.Now;
+                    }
                 }
-                else if (DateTime.Now < this.CurrentDay)
+                catch (EndLicenceException)
                 {
-                    this.Check = false;
-                    throw new NonCurrentDateException();
-                }               
-                else
-                {
-                    this.Check = true;
-                    this.CurrentDay = DateTime.Now;
+                    Console.WriteLine("Срок действия подписки истек...");
+                    workTime = false;
                 }
-
+                catch (NonCurrentDateException)
+                {
+                    Console.WriteLine("Установите актуальную дату...");
+                }
             }
-            catch (EndLicenceException)
+            else
             {
                 Console.WriteLine("Срок действия подписки истек...");
             }
-            catch (NonCurrentDateException)
-            {
-                Console.WriteLine("Установите актуальную дату...");
-            }
         }
-
     }
 }
